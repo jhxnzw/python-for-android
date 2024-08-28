@@ -1,0 +1,82 @@
+import tkinter as tk
+from tkinter import messagebox, simpledialog
+
+
+class MetaDiariaApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Sistema de Metas Diárias")
+
+        self.frame = tk.Frame(root)
+        self.frame.pack(pady=10)
+
+        self.metas = []
+
+        # Widgets
+        self.listbox = tk.Listbox(self.frame, width=50, height=10, selectmode=tk.SINGLE)
+        self.listbox.pack(side=tk.LEFT, padx=10)
+
+        self.scrollbar = tk.Scrollbar(self.frame)
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.listbox.config(yscrollcommand=self.scrollbar.set)
+        self.scrollbar.config(command=self.listbox.yview)
+
+        self.entry = tk.Entry(root, width=50)
+        self.entry.pack(pady=10)
+
+        self.add_button = tk.Button(root, text="Adicionar Meta", command=self.adicionar_meta)
+        self.add_button.pack(pady=5)
+
+        self.complete_button = tk.Button(root, text="Marcar como Concluída", command=self.marcar_como_concluida)
+        self.complete_button.pack(pady=5)
+
+        self.remove_button = tk.Button(root, text="Remover Meta", command=self.remover_meta)
+        self.remove_button.pack(pady=5)
+
+        self.edit_button = tk.Button(root, text="Alterar Meta", command=self.alterar_meta)
+        self.edit_button.pack(pady=5)
+
+    def adicionar_meta(self):
+        meta = self.entry.get()
+        if meta:
+            self.metas.append(meta)
+            self.listbox.insert(tk.END, meta)
+            self.entry.delete(0, tk.END)
+        else:
+            messagebox.showwarning("Aviso", "A meta não pode estar vazia.")
+
+    def marcar_como_concluida(self):
+        selecionado = self.listbox.curselection()
+        if selecionado:
+            indice = selecionado[0]
+            self.listbox.itemconfig(indice, {'bg': 'green'})
+        else:
+            messagebox.showwarning("Aviso", "Selecione uma meta para marcar como concluída.")
+
+    def remover_meta(self):
+        selecionado = self.listbox.curselection()
+        if selecionado:
+            indice = selecionado[0]
+            self.listbox.delete(indice)
+            del self.metas[indice]
+        else:
+            messagebox.showwarning("Aviso", "Selecione uma meta para remover.")
+
+    def alterar_meta(self):
+        selecionado = self.listbox.curselection()
+        if selecionado:
+            indice = selecionado[0]
+            nova_meta = simpledialog.askstring("Alterar Meta", "Digite a nova meta:")
+            if nova_meta:
+                self.metas[indice] = nova_meta
+                self.listbox.delete(indice)
+                self.listbox.insert(indice, nova_meta)
+        else:
+            messagebox.showwarning("Aviso", "Selecione uma meta para alterar.")
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = MetaDiariaApp(root)
+    root.mainloop()
